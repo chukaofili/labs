@@ -63,6 +63,8 @@ Duration: 0:02:00
 3. In the left navigation panel under **EXPLORE**, ensure you are on the **Playground** tab.
 4. Look at the center of the screen. Next to "Explore Google models," make sure the toggle is set to **Models** (not Agents).
 
+![The Models / Agents toggle in Google AI Studio, set to Models](img/01-models-toggle.png)
+
 > aside positive
 >
 > The "Agents" mode spins up a persistent coding sandbox; "Models" is the correct mode for building a chat interface.
@@ -81,6 +83,8 @@ Before adding your docs, let's prove *why* we need grounding by testing the raw 
 3. Locate the main text box at the very bottom of the screen that says **"Start typing a prompt..."**
 4. Ask something only your company would know, e.g.: *"What is [Your Startup]'s refund window for annual plans?"*
 5. Click the **Run** button on the far right of that bottom text box.
+
+![Run settings panel with Grounding with Google Search toggled off](img/02-grounding-off.png)
 
 The model either says it doesn't know, or it **makes up** a plausible-sounding answer.
 
@@ -107,6 +111,8 @@ possible, mention which document the answer came from.
 
 4. In the model selector dropdown (top of the right panel), choose the latest **Flash** model (e.g., Gemini 3.5 Flash for fast, cheap chat) or a **Pro** model (for deeper reasoning).
 
+![The System instructions panel in AI Studio with the support-assistant prompt pasted in](img/03-system-instructions.png)
+
 The "only answer from the documents" rule is what keeps your bot honest. This single instruction is doing a lot of work.
 
 ## Give it your knowledge
@@ -119,6 +125,8 @@ Now we give the model access to your private company truth.
 3. Select and attach your 1–3 startup documents (PDFs, text files, etc.).
 4. Gemini's large context window will now read the whole document and use it as a direct knowledge base.
 
+![The + attach menu open in the AI Studio prompt bar, with a document attached](img/04-attach-plus.png)
+
 > aside positive
 >
 > **Checkpoint:** Your documents are attached and visible in the chat context.
@@ -130,6 +138,8 @@ Duration: 0:05:00
 2. Click **Run**.
 
 The answer now comes straight from your document — correct, specific, and citing the source file.
+
+![A grounded answer in AI Studio citing the source document and page number](img/05-grounded-answer.png)
 
 Try a few more:
 
@@ -175,6 +185,8 @@ Google AI Studio is a prototyping sandbox. Now that your assistant works in the 
 2. Look at the generated snippet. Everything you built by clicking around — your System Instructions and your Google Search tool — is translated into API code.
 3. Click **Get API key** (usually in the left navigation menu) to generate a secure key for your workspace.
 4. **The Handoff:** Copy that code snippet, your API key, and the raw PDF files. Hand them to your developer.
+
+![The Get code panel in AI Studio showing the generated API snippet](img/06-get-code.png)
 
 > aside negative
 >
