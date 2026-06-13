@@ -9,7 +9,7 @@
 //          (you can pass .md, .pdf, .txt, .docx, ... and as many files as you like)
 // Install: npm install @google/genai
 
-const { GoogleGenAI } = require("@google/genai");
+import { GoogleGenAI } from "@google/genai";
 
 // The SDK reads GEMINI_API_KEY (or GOOGLE_API_KEY) from the environment.
 const ai = new GoogleGenAI({});

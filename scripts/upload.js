@@ -7,7 +7,7 @@
 // Note: this sends the whole document as context on each call ("RAG-lite").
 // For many/large docs, use the managed File Search tool for true retrieval.
 
-const { GoogleGenAI, createPartFromUri } = require("@google/genai");
+import { GoogleGenAI, createPartFromUri } from "@google/genai";
 
 // The SDK automatically reads GEMINI_API_KEY (or GOOGLE_API_KEY) from the env.
 const ai = new GoogleGenAI({});
