@@ -127,6 +127,8 @@ Now that your assistant is working perfectly in the playground (since Google AI 
 3. Click the **Get API key** button (usually in the left navigation menu) to generate a secure key for your workspace.
 4. **The Handoff:** Copy that code snippet, your API key, and the raw PDF files. Hand them to your developer.
 
+> **Heads-up: the "Get code" snippet is a starting point, not production code.** It's a single hard-coded request — it still needs productionizing: loading the API key from a secret/env var (never hard-coded), accepting real user messages, keeping conversation history, streaming responses, and handling errors. For a mini, ready-to-go example of all of that, see [`scripts/agent.js`](../scripts/agent.js) — a small multi-turn chat agent built on the SDK's chat session helper that your developer can run today and grow from.
+
 **Note on your Uploaded Files:** When you click "Get Code," AI Studio does not download the PDFs you uploaded. Your developer will need to re-upload them into your app's environment with the Gemini API. This Codelab repo ships two ready-to-run Node.js scripts in [`scripts/`](../scripts/) that do exactly that, using the current `@google/genai` SDK and the **File Search** tool - the same retrieval-with-citations you built in the playground.
 
 The flow is two steps:

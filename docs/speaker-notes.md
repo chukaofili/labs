@@ -18,7 +18,7 @@
 | 10:20 | 10  | **Live build: system prompt + upload (Steps 2–3)** | Paste the system instruction, pick Gemini 3.5 Flash, then attach your demo docs with the **+** button so the model is grounded in them. Narrate every click. Attendees follow on their laptops.                                                                                  |
 | 10:30 | 8   | **Live: grounded answers (Step 4)**                | Re-ask the question - now correct. Ask an out-of-scope question - it declines instead of inventing. This is the payoff; pause here.                                                                                                                                              |
 | 10:38 | 7   | **Hands-on: their turn**                           | Attendees upload their _own_ doc and ask their _own_ question. Walk the room (or watch chat). This is the stickiest part - protect the time.                                                                                                                                     |
-| 10:45 | 5   | **Make it real (Step 6)**                          | Show "Get API key / code" → the bridge to production. Point at the repo's runnable `scripts/` (`upload.js` indexes docs into File Search, `search.js` returns grounded, cited answers) as the exact handoff your engineer ships. Founders need to see the path to their product. |
+| 10:45 | 5   | **Make it real (Step 6)**                          | Show "Get API key / code" → the bridge to production. Be honest that the **"Get code" snippet is a starting point, not production code** (it's one hard-coded request — still needs a secret-managed API key, real user messages, history, streaming, error handling). Point at the repo's runnable `scripts/` — `upload.js`/`search.js` for File Search, and **`agent.js` as a mini ready-to-go chat agent** that already does the productionized bits. Founders need to see the path to their product. |
 | 10:50 | 5   | **Use cases + grounding (Step 5)**                 | Support bot, internal AMA, customer assistant. Show live web grounding briefly. Tie to their businesses. If technical, tease **Step 7 (MCP)** - connecting the bot to live databases/APIs.                                                                                       |
 | 10:55 | 5   | **Q&A + resources**                                | Share the codelab link, AI Studio link, and this repo (sample knowledge base + scripts). Invite them to keep building.                                                                                                                                                           |
 
@@ -42,6 +42,7 @@
 - **"You just built the core of a support bot in 10 minutes with no code."** Reinforces speed-to-value.
 - **"What you did by hand maps 1:1 to the API call your engineer ships."** Removes the "but is this a toy?" doubt.
 - **"The bot saying 'I don't know' is a feature, not a bug."** Trust > coverage for customer-facing tools.
+- **"'Get code' gets you 80% there — the last 20% is productionizing."** Secret-managed keys, real user messages, history, streaming, error handling. `scripts/agent.js` is the mini ready-to-go example of that last 20%.
 
 ---
 
