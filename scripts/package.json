@@ -1,0 +1,14 @@
+{
+  "name": "chatbot-with-rag-scripts",
+  "version": "1.0.0",
+  "description": "Gemini RAG code samples for the Build with Gemini workshop",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "upload": "node upload.js",
+    "search": "node search.js"
+  },
+  "dependencies": {
+    "@google/genai": "^1.0.0"
+  }
+}
