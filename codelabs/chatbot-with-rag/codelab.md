@@ -253,6 +253,6 @@ You built a grounded "chat with your docs" assistant with **zero code**. You now
 
 ### Learn more
 
-- [Companion repo: chukaofili/labs](https://github.com/chukaofili/labs) — sample knowledge base + runnable scripts.
+- [Companion code & sample data](https://github.com/chukaofili/labs/tree/main/codelabs/chatbot-with-rag) — this codelab's sample knowledge base + runnable scripts.
 - [Gemini API docs](https://ai.google.dev/gemini-api/docs)
 - [File Search (managed RAG)](https://ai.google.dev/gemini-api/docs/file-search)
