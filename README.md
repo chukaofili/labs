@@ -47,7 +47,7 @@ The `knowledge-base/` folder is a fictional-but-realistic dataset for **Interste
 3. Attach the files from `knowledge-base/` with the **+** button so the model is grounded in them.
 4. Ask questions — the bot answers from the docs and cites its source.
 
-Full walkthrough: [`docs/codelab.md`](docs/codelab.md). Presenter materials: [slide deck (Google Slides)](https://docs.google.com/presentation/d/1cFVxBTA-jEGInwmGqipLam65ZoXknT5oC2-ZhiJptMU/edit?usp=sharing) and [`docs/speaker-notes.md`](docs/speaker-notes.md).
+Full walkthrough: [`codelabs/codelab.md`](codelabs/codelab.md) — authored as a hostable [Google Codelabs](codelabs/) site (`claat export`). Presenter materials: [slide deck (Google Slides)](https://docs.google.com/presentation/d/1cFVxBTA-jEGInwmGqipLam65ZoXknT5oC2-ZhiJptMU/edit?usp=sharing) and [`docs/speaker-notes.md`](docs/speaker-notes.md).
 
 ## Run the code samples (optional)
 
