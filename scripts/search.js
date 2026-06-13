@@ -1,12 +1,17 @@
 // search.js
-// A real RAG chatbot over your own docs, using the Gemini File Search tool.
+// Query a Gemini File Search store — the retrieval step of RAG.
 //
-// Unlike upload.js (which stuffs the whole document into context every call),
-// File Search chunks + embeds your docs once, then retrieves ONLY the relevant
-// pieces at query time and grounds the answer in them — with citations.
+// File Search retrieves ONLY the relevant chunks of your indexed docs and grounds
+// the answer in them, with citations — instead of stuffing whole files into context.
 //
-// Usage:   GEMINI_API_KEY=your_key  node search.js ./knowledge-base/01.md ./knowledge-base/02.md
-//          (you can pass .md, .pdf, .txt, .docx, ... and as many files as you like)
+// Usage:
+//   # Query an existing store built by upload.js (recommended):
+//   GEMINI_API_KEY=your_key  FILE_SEARCH_STORE=fileSearchStores/kb-123  node search.js
+//
+//   # Or do everything in one shot: index the given files, then query:
+//   GEMINI_API_KEY=your_key  node search.js ./knowledge-base/*.md
+//
+//   # Override the question with the QUESTION env var.
 // Install: npm install @google/genai
 
 import { GoogleGenAI } from "@google/genai";
@@ -26,15 +31,7 @@ const SYSTEM_INSTRUCTION =
   "If the answer is not in them, say you don't know — do not guess. " +
   "Mention which document the answer came from.";
 
-async function run() {
-  const files = process.argv.slice(2);
-  if (files.length === 0) {
-    console.error("Usage: node search.js <file1> [file2 ...]");
-    process.exit(1);
-  }
-
-  // 1. Create a File Search store. This is the persistent container for the
-  //    embeddings (it lives until you delete it — see cleanup note at the end).
+async function indexFiles(files) {
   const store = await ai.fileSearchStores.create({
     config: {
       displayName: `kb-${Date.now()}`,
@@ -43,8 +40,6 @@ async function run() {
   });
   console.log(`Created File Search store: ${store.name}`);
 
-  // 2. Upload + index each file. File Search automatically chunks, embeds, and
-  //    indexes the content. Indexing is async, so we poll the operation.
   for (const file of files) {
     console.log(`Indexing ${file} ...`);
     let op = await ai.fileSearchStores.uploadToFileSearchStore({
@@ -58,23 +53,42 @@ async function run() {
     }
   }
   console.log("All files indexed.\n");
+  return store.name;
+}
 
-  // 3. Ask. The fileSearch tool retrieves the relevant chunks and grounds the
-  //    answer. (Note: File Search can't currently be combined with Google
-  //    Search grounding or URL context in the same call.)
+async function run() {
+  // Use a pre-built store if provided, otherwise index the files passed as args.
+  let storeName = process.env.FILE_SEARCH_STORE;
+  if (!storeName) {
+    const files = process.argv.slice(2);
+    if (files.length === 0) {
+      console.error(
+        "Provide files to index, or set FILE_SEARCH_STORE to query an existing store."
+      );
+      console.error("Usage: node search.js <file1> [file2 ...]");
+      process.exit(1);
+    }
+    storeName = await indexFiles(files);
+  } else {
+    console.log(`Querying store: ${storeName}\n`);
+  }
+
+  // Ask. The fileSearch tool retrieves the relevant chunks and grounds the answer.
+  // (Note: File Search can't be combined with Google Search grounding or URL
+  // context in the same call.)
   const response = await ai.models.generateContent({
     model: MODEL,
     contents: QUESTION,
     config: {
       systemInstruction: SYSTEM_INSTRUCTION,
-      tools: [{ fileSearch: { fileSearchStoreNames: [store.name] } }],
+      tools: [{ fileSearch: { fileSearchStoreNames: [storeName] } }],
     },
   });
 
   console.log("--- Answer ---");
   console.log(response.text);
 
-  // 4. Show citations: which document (and page) each piece of the answer came from.
+  // Citations: which document (and page) each piece of the answer came from.
   const chunks =
     response.candidates?.[0]?.groundingMetadata?.groundingChunks ?? [];
   if (chunks.length) {
@@ -91,10 +105,6 @@ async function run() {
       }
     }
   }
-
-  // Cleanup tip: stores persist and count toward your storage quota. To reuse a
-  // store across runs, skip step 1-2 and pass its name. To delete this one:
-  // await ai.fileSearchStores.delete({ name: store.name, config: { force: true } });
 }
 
 run().catch((err) => {

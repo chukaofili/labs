@@ -1,59 +1,64 @@
 // upload.js
-// Ask a question grounded in a single PDF, using the Gemini Files API.
+// Ingest documents into a Gemini File Search store (the indexing step of RAG).
 //
-// Usage:   GEMINI_API_KEY=your_key  node upload.js ./path/to/startup_handbook.pdf
+// File Search chunks, embeds, and indexes each file so it can be retrieved later.
+// Run this once to build your knowledge base, then query it with search.js.
+//
+// Usage:
+//   # Create a new store and index files into it:
+//   GEMINI_API_KEY=your_key  node upload.js ./knowledge-base/*.md
+//
+//   # Add files to an existing store (reuse it across runs):
+//   GEMINI_API_KEY=your_key  FILE_SEARCH_STORE=fileSearchStores/kb-123  node upload.js ./new-doc.pdf
+//
 // Install: npm install @google/genai
-//
-// Note: this sends the whole document as context on each call ("RAG-lite").
-// For many/large docs, use the managed File Search tool for true retrieval.
 
-import { GoogleGenAI, createPartFromUri } from "@google/genai";
+import { GoogleGenAI } from "@google/genai";
 
-// The SDK automatically reads GEMINI_API_KEY (or GOOGLE_API_KEY) from the env.
+// The SDK reads GEMINI_API_KEY (or GOOGLE_API_KEY) from the environment.
 const ai = new GoogleGenAI({});
 
-const MODEL = "gemini-3.5-flash"; // GA model (current as of June 2026)
-const QUESTION =
-  "What is our refund window for annual plans? " +
-  "If it is not in the document, say you don't know.";
-
 async function run() {
-  const filePath = process.argv[2];
-  if (!filePath) {
-    console.error("Error: please provide a file path.");
-    console.error("Usage: node upload.js <path-to-document.pdf>");
+  const files = process.argv.slice(2);
+  if (files.length === 0) {
+    console.error("Usage: node upload.js <file1> [file2 ...]");
     process.exit(1);
   }
 
-  // 1. Upload the document. mimeType is inferred from the extension, but we set
-  //    it explicitly so it also works for files without a clear .pdf name.
-  console.log(`Uploading ${filePath}...`);
-  let file = await ai.files.upload({
-    file: filePath,
-    config: { mimeType: "application/pdf" },
-  });
-  console.log(`Uploaded. File ID: ${file.name}`);
-
-  // 2. Wait for the file to finish PROCESSING before using it in a request.
-  while (file.state === "PROCESSING") {
-    process.stdout.write(".");
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    file = await ai.files.get({ name: file.name });
+  // 1. Reuse an existing store if one was passed, otherwise create a new one.
+  //    The store persists until you delete it (raw files expire after 48h).
+  let storeName = process.env.FILE_SEARCH_STORE;
+  if (storeName) {
+    console.log(`Using existing store: ${storeName}`);
+  } else {
+    const store = await ai.fileSearchStores.create({
+      config: {
+        displayName: `kb-${Date.now()}`,
+        embeddingModel: "models/gemini-embedding-2", // text + image capable
+      },
+    });
+    storeName = store.name;
+    console.log(`Created File Search store: ${storeName}`);
   }
-  if (file.state === "FAILED") {
-    throw new Error("File processing failed.");
+
+  // 2. Upload + index each file. Indexing is async, so we poll the operation
+  //    until it reports done.
+  for (const file of files) {
+    console.log(`Indexing ${file} ...`);
+    let op = await ai.fileSearchStores.uploadToFileSearchStore({
+      file,
+      fileSearchStoreName: storeName,
+      config: { displayName: file.split("/").pop() },
+    });
+    while (!op.done) {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+      op = await ai.operations.get({ operation: op });
+    }
   }
-  console.log(`\nFile is ${file.state}.`);
 
-  // 3. Ask the model. Pass the file as a proper Part (file first, prompt after).
-  console.log("Asking the model a question based on the document...");
-  const response = await ai.models.generateContent({
-    model: MODEL,
-    contents: [createPartFromUri(file.uri, file.mimeType), QUESTION],
-  });
-
-  console.log("\n--- AI Response ---");
-  console.log(response.text);
+  console.log(`\nIndexed ${files.length} file(s).`);
+  console.log(`\nQuery this knowledge base with:`);
+  console.log(`  FILE_SEARCH_STORE=${storeName} node search.js`);
 }
 
 run().catch((err) => {

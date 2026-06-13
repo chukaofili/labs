@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Gemini RAG code samples for the Build with Gemini workshop",
   "private": true,
-  "type": "commonjs",
+  "type": "module",
   "scripts": {
     "upload": "node upload.js",
     "search": "node search.js"
