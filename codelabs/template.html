@@ -1,0 +1,51 @@
+<!doctype html>
+<!--
+  Custom claat HTML template for the labs site.
+  Identical to claat's built-in 'html' template, with two extra attributes on
+  <google-codelab> so the codelab-elements render the "About this codelab" block:
+    authors=...        -> "Written by <authors>"   (from the `authors:` metadata)
+    last-updated=...   -> "Last updated <date>"     (set automatically on export)
+-->
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>{{.Meta.Title}}</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="{{.Prefix}}/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="{{.GlobalGA}}" ga4id="{{.GlobalGA4}}"></google-codelab-analytics>
+  <google-codelab codelab-gaid="{{.Meta.GA}}"
+                  codelab-ga4id="{{.Meta.GA4}}"
+                  id="{{.Meta.ID}}"
+                  title="{{.Meta.Title}}"
+                  environment="{{index .Env}}"
+                  feedback-link="{{.Meta.Feedback}}"
+                  authors="{{.Meta.Authors}}"
+                  last-updated="{{.Updated}}">
+    {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
+      <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
+        {{.Content | renderHTML $.Context}}
+      </google-codelab-step>
+    {{end}}{{end}}
+  </google-codelab>
+
+  <script src="{{.Prefix}}/claat-public/native-shim.js"></script>
+  <script src="{{.Prefix}}/claat-public/custom-elements.min.js"></script>
+  <script src="{{.Prefix}}/claat-public/prettify.js"></script>
+  <script src="{{.Prefix}}/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>

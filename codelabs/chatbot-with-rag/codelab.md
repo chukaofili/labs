@@ -1,10 +1,10 @@
-author: Chuka Ofili
+authors: Chuka Ofili
 summary: Build a grounded "chat with your docs" RAG assistant in Google AI Studio with no code, then take it to production with the Gemini API and File Search.
-id: build-rag-chatbot-ai-studio
+id: chatbot-with-rag
 categories: gemini,ai,rag
 environments: Web
 status: Published
-feedback link: https://github.com/chukaofili/chatbot-with-rag/issues
+feedback link: https://github.com/chukaofili/labs/issues
 
 # Build a "Chat With Your Docs" Assistant — No Code, in Google AI Studio
 
@@ -192,7 +192,7 @@ Google AI Studio is a prototyping sandbox. Now that your assistant works in the 
 >
 > The "Get code" snippet is a starting point, not production code. It's a single hard-coded request — it still needs productionizing: loading the API key from a secret/env var (never hard-coded), accepting real user messages, keeping conversation history, streaming responses, and handling errors.
 
-For a mini, ready-to-go example of all of that, see [scripts/agent.js](https://github.com/chukaofili/chatbot-with-rag/blob/main/scripts/agent.js) — a small multi-turn chat agent built on the SDK's chat-session helper that your developer can run today and grow from.
+For a mini, ready-to-go example of all of that, see [scripts/agent.js](https://github.com/chukaofili/labs/blob/main/codelabs/chatbot-with-rag/scripts/agent.js) — a small multi-turn chat agent built on the SDK's chat-session helper that your developer can run today and grow from.
 
 ### Re-uploading your files
 
@@ -200,11 +200,11 @@ When you click "Get code," AI Studio does not download the PDFs you attached. Yo
 
 The flow is two steps:
 
-1. [scripts/upload.js](https://github.com/chukaofili/chatbot-with-rag/blob/main/scripts/upload.js) — indexes your documents into a File Search store once.
-2. [scripts/search.js](https://github.com/chukaofili/chatbot-with-rag/blob/main/scripts/search.js) — queries that store for grounded, cited answers as many times as you like.
+1. [scripts/upload.js](https://github.com/chukaofili/labs/blob/main/codelabs/chatbot-with-rag/scripts/upload.js) — indexes your documents into a File Search store once.
+2. [scripts/search.js](https://github.com/chukaofili/labs/blob/main/codelabs/chatbot-with-rag/scripts/search.js) — queries that store for grounded, cited answers as many times as you like.
 
 ```bash
-cd scripts
+cd codelabs/chatbot-with-rag/scripts
 npm install             # installs @google/genai and dotenv
 cp .env.example .env    # then set GEMINI_API_KEY (get one at aistudio.google.com/apikey)
 
@@ -219,7 +219,7 @@ Unlike stuffing a whole PDF into every request, File Search retrieves **only the
 
 > aside positive
 >
-> Need to start over or clear duplicate documents? [scripts/cleanup.js](https://github.com/chukaofili/chatbot-with-rag/blob/main/scripts/cleanup.js) tears down the store (`node cleanup.js --yes`) or just empties it while keeping the id (`node cleanup.js --docs --yes`). Run it with no flags first for a safe dry-run preview.
+> Need to start over or clear duplicate documents? [scripts/cleanup.js](https://github.com/chukaofili/labs/blob/main/codelabs/chatbot-with-rag/scripts/cleanup.js) tears down the store (`node cleanup.js --yes`) or just empties it while keeping the id (`node cleanup.js --docs --yes`). Run it with no flags first for a safe dry-run preview.
 
 For bulk uploads, review the [Gemini API File Search Guide](https://ai.google.dev/gemini-api/docs/file-search) and the [File API documentation](https://ai.google.dev/api/files). The API allows up to 20GB of stored files per project, so a developer can extend `upload.js` to bulk-index an entire directory at once.
 
@@ -253,6 +253,6 @@ You built a grounded "chat with your docs" assistant with **zero code**. You now
 
 ### Learn more
 
-- [Companion repo: chukaofili/chatbot-with-rag](https://github.com/chukaofili/chatbot-with-rag) — sample knowledge base + runnable scripts.
+- [Companion repo: chukaofili/labs](https://github.com/chukaofili/labs) — sample knowledge base + runnable scripts.
 - [Gemini API docs](https://ai.google.dev/gemini-api/docs)
 - [File Search (managed RAG)](https://ai.google.dev/gemini-api/docs/file-search)

@@ -1,4 +1,4 @@
-name: Deploy codelab to GitHub Pages
+name: Deploy codelabs to GitHub Pages
 
 on:
   push:
@@ -33,14 +33,21 @@ jobs:
       - name: Install claat
         run: go install github.com/googlecodelabs/tools/claat@latest
 
-      - name: Export codelab with claat
-        working-directory: codelabs
-        run: claat export codelab.md
-
-      - name: Assemble site (codelab at the root)
+      - name: Build site (landing page + every codelab)
         run: |
+          set -euo pipefail
           mkdir -p _site
-          cp -r codelabs/build-rag-chatbot-ai-studio/. _site/
+          # Landing page that lists the codelabs.
+          cp codelabs/index.html _site/index.html
+          # Each codelabs/<name>/codelab.md exports to _site/<id>/ (id from its metadata).
+          for dir in codelabs/*/; do
+            [ -f "${dir}codelab.md" ] || continue
+            echo "Exporting ${dir}codelab.md"
+            # -f ../template.html: custom template that adds the "About this codelab" block.
+            (cd "$dir" && claat export -f ../template.html -o "$GITHUB_WORKSPACE/_site" codelab.md)
+          done
+          echo "--- _site ---"
+          find _site -maxdepth 2 -type d | sort
 
       - uses: actions/upload-pages-artifact@v5
         with:

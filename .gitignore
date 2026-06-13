@@ -26,3 +26,6 @@ dist/
 build/
 *.tmp
 ~$*            # Office lock files
+
+# claat / codelab export output (build with: claat export -o _site)
+_site/
