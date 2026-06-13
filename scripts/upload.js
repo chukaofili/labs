@@ -4,19 +4,19 @@
 // File Search chunks, embeds, and indexes each file so it can be retrieved later.
 // Run this once to build your knowledge base, then query it with search.js.
 //
+// Setup: copy .env.example to .env and set GEMINI_API_KEY (loaded via dotenv).
+//
 // Usage:
 //   # Create a new store and index files into it:
-//   GEMINI_API_KEY=your_key  node upload.js ./knowledge-base/*.md
+//   node upload.js ./knowledge-base/pdfs/*.pdf
 //
 //   # Add files to an existing store (reuse it across runs):
-//   GEMINI_API_KEY=your_key  FILE_SEARCH_STORE=fileSearchStores/kb-123  node upload.js ./new-doc.pdf
-//
-// Install: npm install @google/genai dotenv
+//   node upload.js ./new-doc.pdf
 
 import "dotenv/config";
 import { GoogleGenAI } from "@google/genai";
 
-// The SDK reads GEMINI_API_KEY (or GOOGLE_API_KEY) from the environment.
+// dotenv loads .env; the SDK then reads GEMINI_API_KEY (or GOOGLE_API_KEY) & FILE_SEARCH_STORE.
 const ai = new GoogleGenAI({});
 
 async function run() {
