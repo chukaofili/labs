@@ -1,173 +1,178 @@
 # Build a "Chat With Your Docs" Assistant — No Code, in Google AI Studio
 
-**Workshop:** 2026 GFSAA — Build with Gemini and Google's generative language models
-**Format:** ~45 min hands-on, no coding required
+**Workshop:** 2026 GFSAA — Build with Gemini and Google's generative language models  
+**Format:** ~45 min hands-on, no coding required  
 **You'll need:** A Google account, a laptop with a browser, and 1–3 documents about your startup (pitch deck, FAQ, product doc, policy — PDF, Google Doc, or text).
 
 ---
 
 ## What you'll build
 
-A chatbot that answers questions **using only your own documents** — your pricing, your FAQ, your onboarding guide — instead of making things up. This pattern is called **RAG (Retrieval-Augmented Generation)**: the model retrieves the relevant pieces of *your* content, then writes an answer grounded in them.
+A chatbot that answers questions **using only your own documents** — your pricing, your FAQ, your onboarding guide — instead of making things up. This pattern is called **RAG (Retrieval-Augmented Generation)** or **Document Grounding**: the model looks at _your_ specific content, then writes an answer grounded in it.
 
-By the end you'll have a working assistant you can share, plus a clear mental model of how to plug this into your own product.
+By the end you'll have a working assistant ready for prototyping, plus a clear mental model of how to hand this off to your engineering team.
 
-> **Why founders care:** This is the fastest way to turn a pile of company docs into a support bot, an internal "ask-me-anything," or a customer-facing assistant — without hiring an ML team.
+**Why founders care:** This is the fastest way to turn a pile of company docs into a support bot, an internal "ask-me-anything," or a customer-facing assistant — without hiring an ML team.
 
 ---
 
-## Before we start: the 3 ideas behind RAG
+## Before we start: the 3 ideas behind Grounding
 
-1. **The model is smart but doesn't know *your* business.** Gemini wasn't trained on your internal pricing or your refund policy.
-2. **RAG fixes this by retrieval.** You give it a knowledge source. When a user asks a question, the system finds the relevant chunks and hands them to the model *with* the question.
-3. **Grounded answers cite their source.** Good RAG answers point back to the document they came from — so you can trust and verify them.
+1. **The model is smart but doesn't know _your_ business.** Gemini wasn't trained on your internal pricing or your refund policy.
+2. **Grounding fixes this.** You give it a knowledge source. When a user asks a question, the system looks at the relevant information and hands it to the model _with_ the question.
+3. **Grounded answers cite their source.** Good answers point back to the document they came from — so you can trust and verify them.
 
-Keep this picture in mind: **Your docs → chunked & indexed → user asks → relevant chunks retrieved → Gemini answers from them.**
+Keep this picture in mind: **Your docs → uploaded to context → user asks → Gemini answers strictly from your docs.**
 
 ---
 
 ## Step 0 — Open Google AI Studio (2 min)
 
-1. Go to **aistudio.google.com**.
-2. Sign in with your Google account.
-3. If prompted, accept the terms. You're now in the studio — free to experiment.
+1. Go to **aistudio.google.com** and sign in with your Google account.
+2. If prompted, accept the terms. You're now in the studio — free to experiment.
+3. In the left navigation panel under **EXPLORE**, ensure you are on the **Playground** tab.
+4. Look at the center of the screen. Next to "Explore Google models," make sure the toggle is set to **Models** (not Agents).
+   _(Note: The "Agents" mode spins up a persistent coding sandbox; "Models" is the correct mode for building a chat interface)._
 
-> No credit card or install needed to follow this workshop. Everything runs in the browser.
-
-**Checkpoint:** You can see the AI Studio interface with a chat/prompt area and a left or right panel of settings.
+**Checkpoint:** You can see the AI Studio interface with a chat/prompt area at the bottom and a right panel for settings.
 
 ---
 
 ## Step 1 — Try the model raw, so you feel the problem (5 min)
 
-Before adding your docs, let's prove *why* we need RAG.
+Before adding your docs, let's prove _why_ we need grounding by testing the raw brain of the model.
 
-1. In the prompt box, ask something only your company would know, e.g.:
-   *"What is [Your Startup]'s refund window for annual plans?"*
-2. Send it.
+1. Look at the **Run settings** panel on the right side of the screen under **Tools**.
+2. **Crucial:** Ensure that **Grounding with Google Search** is toggled **OFF**. We don't want it looking up your website just yet.
+3. Locate the main text box at the very bottom of the screen that says **"Start typing a prompt..."**
+4. Ask something only your company would know, e.g.: _"What is [Your Startup]'s refund window for annual plans?"_ 5. Click the **Run** button on the far right of that bottom text box.
 
-**What happens:** The model either says it doesn't know, or it **makes up** a plausible-sounding answer. That confident-but-wrong behaviour is exactly what RAG prevents.
-
-> **Talking point:** This is the "aha." A general model has no access to your private truth. We're about to give it that truth.
-
----
-
-## Step 2 — Set the assistant's behaviour with System Instructions (5 min)
-
-System instructions tell the model *who it is* and *how to behave* for the whole conversation.
-
-1. Find the **System instructions** field (top of the settings panel).
-2. Paste this starter (edit the brackets for your startup):
-
-```
-You are the support assistant for [Your Startup].
-Answer ONLY using the information in the provided documents.
-If the answer is not in the documents, say:
-"I don't have that in our docs yet — I'll flag it for the team."
-Be concise, friendly, and never invent prices, dates, or policies.
-When possible, mention which document the answer came from.
-```
-
-3. Pick a model. Use **Gemini 3 Flash** (fast, cheap — great for chat) or **Gemini 3 Pro** (deeper reasoning) from the model dropdown.
-
-> **Why this matters:** The "only answer from the documents" rule is what keeps your bot honest. This single instruction is doing a lot of work.
-
-**Checkpoint:** Your system instruction is saved and a model is selected.
+**What happens:** The model either says it doesn't know, or it **makes up** a plausible-sounding answer. That confident-but-wrong behavior is exactly what grounding prevents.
 
 ---
 
-## Step 3 — Give it your knowledge (the RAG part) (10 min)
+## Step 2 — Set the assistant's behavior with System Instructions (5 min)
 
-You have two no-code paths. **Path A** is the proper RAG setup; **Path B** is the quick version. Pick based on time and how many docs you have.
+System instructions tell the model _who it is_ and _how to behave_ for the whole conversation.
 
-### Path A — File Search (managed RAG) ✅ recommended
+1. Look at the **Run settings** panel on the right side of your screen.
+2. Locate the **System instructions** input field.
+3. Paste this starter (edit the brackets for your startup):
 
-AI Studio's **File Search** tool does real RAG for you: it chunks your documents, turns them into embeddings, stores them, and retrieves the right pieces at question time. No code, no vector database to manage.
+   > You are the support assistant for [Your Startup]. Answer ONLY using the information in the provided documents. If the answer is not in the documents, say: "I don't have that in our docs yet — I'll flag it for the team." Be concise, friendly, and never invent prices, dates, or policies. When possible, mention which document the answer came from.
 
-1. In the **Tools** section of the settings panel, enable **File Search** (also called the file/knowledge tool).
-2. Click **Upload** / **Add files** and add your 1–3 documents. Wait for indexing to finish (a few seconds per doc).
-3. That's it — your docs are now a searchable knowledge base the model will draw from.
+4. In the model selector dropdown (top of the right panel), choose the latest **Flash** model (e.g., Gemini 3.5 Flash for fast, cheap chat) or **Pro** model (for deeper reasoning).
 
-> **Founder note:** This is the same mechanism you'd call from your app via the Gemini API later. What you build here maps 1:1 to production.
+**Why this matters:** The "only answer from the documents" rule is what keeps your bot honest. This single instruction is doing a lot of work.
 
-### Path B — Drop files straight into context (quick version)
+---
 
-If you can't find the File Search tool or have just one short doc:
+## Step 3 — Give it your knowledge (10 min)
 
-1. Click the **media / + (insert)** button in the prompt area.
-2. Upload your document(s) directly into the conversation.
-3. Gemini's long context window reads the whole document and answers from it.
+Now we give the model access to your private company truth.
 
-> **Trade-off:** Path B re-reads the full doc every turn (fine for a few small files). Path A scales to many large docs and only retrieves what's relevant — cheaper and faster at scale.
+1. Look back down at the prompt box at the bottom of the screen.
+2. Click the **+ (plus) icon** next to the microphone to upload your documents.
+3. Select and upload your 1–3 startup documents (PDFs, text files, etc.).
+4. Gemini's massive context window will now read the whole document and use it as a direct knowledge base.
 
-**Checkpoint:** Your documents are uploaded (via File Search or directly in context).
+**Checkpoint:** Your documents are uploaded and visible in the chat context.
 
 ---
 
 ## Step 4 — Ask the same question again (5 min)
 
-1. Re-ask your Step 1 question:
-   *"What is [Your Startup]'s refund window for annual plans?"*
-2. Send it.
+1. Re-enter your exact Step 1 question in the bottom text box: _"What is [Your Startup]'s refund window for annual plans?"_ 2. Click **Run**.
 
-**What happens now:** The answer comes straight from your document — correct, specific, and (if you asked it to) citing the source file.
+**What happens now:** The answer comes straight from your document — correct, specific, and citing the source file.
 
 Try a few more:
-- A question whose answer **is** in your docs → should answer correctly.
-- A question whose answer is **not** in your docs → should say "I don't have that in our docs yet," *not* invent one.
 
-> **This is the whole game.** Same model, same question — but now it's grounded in your truth. That contrast is the most powerful thing to show.
+- A question whose answer **is** in your docs → should answer correctly.
+- A question whose answer is **not** in your docs → should say "I don't have that in our docs yet," _not_ invent one.
+
+**This is the whole game.** Same model, same question — but now it's grounded in your truth.
 
 ---
 
 ## Step 5 — Add live web facts with Grounding (optional, 5 min)
 
-Some questions need *fresh* info (today's FX rate, a competitor's latest launch). Turn on **Grounding with Google Search** in the Tools panel.
+Some questions need _fresh_ info (today's FX rate, a competitor's latest launch, or industry news).
 
-- Now the bot answers from **your docs** *and* can pull **current web facts** when needed, with links.
-- Great for a founder bot that mixes internal policy with market context.
+1. Go back to the **Tools** section in your right-hand settings panel.
+2. Toggle ON **Grounding with Google Search**.
+3. **Tighten your prompt:** When you give an AI access to the entire internet, it can get distracted and ignore your uploaded files. To fix this, go back to your **System instructions** and replace them with this tightened version:
 
-> **Caution:** With search grounding on, tighten your system instruction so the bot prefers your documents for anything internal, and only uses web search for genuinely external questions.
+   > You are the support assistant for [Your Startup].
+   >
+   > PRIMARY RULE: You must check the provided documents FIRST for any answers regarding [Your Startup]'s pricing, policies, features, or internal operations. Answer using the provided documents if the information exists there.
+   >
+   > SECONDARY RULE: If the user asks a general market question, requests a currency conversion, or asks about current events outside the company documents, you may use Google Search to provide an accurate, up-to-date answer.
+   >
+   > Be concise, friendly, and never invent prices, dates, or policies. Always clarify if your answer came from internal docs or the web.
 
----
-
-## Step 6 — Make it real: turn it into an app (5 min)
-
-1. Switch to **Build** mode in AI Studio.
-2. Describe your assistant in plain English, e.g.:
-   *"A customer support chatbot for [Your Startup] that answers from my uploaded docs and politely declines anything not in them."*
-3. AI Studio scaffolds a shareable app around your configuration. Start simple, test, then add one feature at a time.
-4. Use **Get API key** / **Get code** when you're ready to drop this into your own product — the code mirrors exactly what you built by hand.
-
-**Checkpoint:** You have a shareable app, or an API key + code snippet to take to your engineers.
+4. **Test it out:** Ask a document question (_"What is our refund policy?"_) and a web question (_"What is the current exchange rate for USD to EUR?"_). The bot will now dynamically switch between your private truth and the public web!
 
 ---
 
-## You did it 🎉
+## Step 6 — Make it real: hand it off to your engineers (5 min)
 
-You built a grounded "chat with your docs" assistant with **zero code**. You now understand:
+AI Studio isn't a website builder—it is a prototyping sandbox. Now that your assistant is working perfectly in the playground, it’s time to move it into your actual product.
 
-- Why a raw model can't answer business-specific questions
-- How RAG retrieves *your* content to ground answers
-- The difference between managed RAG (File Search) and dropping files into context
-- How to add live web grounding
-- The path from prototype → API → product
+1. Look in the top right corner of AI Studio and click **</> Get code**.
+2. Look at the code snippet generated. Notice how everything you just built via clicking around—your System Instructions and your Google Search tool—is perfectly translated into API code.
+3. Click the **Get API key** button (usually in the left navigation menu) to generate a secure key for your workspace.
+4. **The Handoff:** Copy that code snippet, your API key, and the raw PDF files. Hand them to your developer.
 
----
+**Founder Note on your Uploaded Files:** When you click "Get Code," AI Studio does not download the PDFs you uploaded. Your developer will need to use the Gemini File API to upload them into your app's environment. You can give them this exact Node.js script to get them started testing locally:
 
-## Take it further
+```javascript
+// upload_and_chat.js
+// Usage: node upload_and_chat.js ./path/to/your/startup_handbook.pdf
+// Tell your dev to install the SDK: npm install @google/generative-ai
+const { GoogleAIFileManager } = require("@google/generative-ai/server");
+const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-- **Swap models:** Try Gemini 3 Pro for complex reasoning, 3 Flash for cheap high-volume chat.
-- **Tune the system prompt:** Add tone, escalation rules, or a "always answer in the user's language" instruction.
-- **Scale the knowledge base:** Add your full help center via File Search.
-- **Productionize:** Use the Gemini API File Search endpoint to wire the same RAG into your app or website.
-- **Add multimodal:** Gemini reads images and PDFs with diagrams — upload a screenshot-heavy doc and ask about it.
+// Initialize with your API Key
+const fileManager = new GoogleAIFileManager(process.env.GEMINI_API_KEY);
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
-## Resources
+async function run() {
+  // Get the file path from the command line arguments
+  const filePath = process.argv[2];
 
-- Google AI Studio — aistudio.google.com
-- Gemini API docs — ai.google.dev/gemini-api/docs
-- File Search (managed RAG) — ai.google.dev/gemini-api/docs/file-search
-- Grounding with Google Search — developers.googleblog.com/en/gemini-api-and-ai-studio-now-offer-grounding-with-google-search
+  if (!filePath) {
+    console.error("Error: Please provide a file path.");
+    console.error("Usage: node upload_and_chat.js <path-to-document.pdf>");
+    process.exit(1);
+  }
 
-> **Note on UI labels:** AI Studio ships changes weekly. Button names ("File Search," "Tools," "Build") may differ slightly on the day — the *concepts* (system instruction → upload knowledge → ask → ground) stay the same. Always do a dry run the morning of the talk.
+  console.log(`Uploading ${filePath}...`);
+
+  // 1. Upload the startup document via the API
+  const uploadResult = await fileManager.uploadFile(filePath, {
+    mimeType: "application/pdf", // Assumes PDF for this example
+    displayName: "Startup Knowledge Base",
+  });
+  console.log(`Successfully uploaded file as: ${uploadResult.file.uri}`);
+
+  console.log("Asking the model a question based on the document...");
+
+  // 2. Pass the document AND the user's question to the model
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
+  const result = await model.generateContent([
+    "What is our refund window for annual plans? If it is not in the document, say you don't know.",
+    {
+      fileData: {
+        fileUri: uploadResult.file.uri,
+        mimeType: uploadResult.file.mimeType,
+      },
+    },
+  ]);
+
+  console.log("\n--- AI Response ---");
+  console.log(result.response.text());
+}
+
+run();
+```
