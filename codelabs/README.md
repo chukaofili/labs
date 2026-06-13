@@ -1,6 +1,6 @@
 # Hostable codelab
 
-[`codelab.md`](codelab.md) is the [Google Codelabs](https://github.com/googlecodelabs/tools) (claat) source for the workshop — the same content as [`docs/codelab.md`](../docs/codelab.md), but in the claat Markdown format so it can be exported to a self-contained, hostable codelab site (stepped UI, per-step timers, progress, table of contents).
+[`codelab.md`](codelab.md) is the canonical [Google Codelabs](https://github.com/googlecodelabs/tools) (claat) source for the workshop — in the claat Markdown format so it can be exported to a self-contained, hostable codelab site (stepped UI, per-step timers, progress, table of contents). [`docs/codelab.md`](../docs/codelab.md) is just a pointer here.
 
 ## Prerequisites
 
@@ -43,4 +43,4 @@ The generated output is build artifact — it's git-ignored by default (see [`.g
 
 Edit [`codelab.md`](codelab.md) and re-run `claat export`. Format reference: the [claat Markdown parser docs](https://github.com/googlecodelabs/tools/tree/main/claat/parser/md) and the [format guide](https://github.com/googlecodelabs/tools/blob/main/FORMAT-GUIDE.md).
 
-Keep this file in sync with [`docs/codelab.md`](../docs/codelab.md) (the plain-Markdown reading copy) when the workshop content changes.
+This is the single source of truth for the codelab content — [`docs/codelab.md`](../docs/codelab.md) only points here.
