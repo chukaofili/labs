@@ -37,7 +37,9 @@ async function run() {
     console.log(`Using existing store: ${storeName}`);
     // List what's already indexed so re-runs don't create duplicate documents.
     // (uploadToFileSearchStore always adds a new doc — it never dedupes.)
-    for await (const doc of await ai.documents.list({ parent: storeName })) {
+    for await (const doc of await ai.fileSearchStores.documents.list({
+      parent: storeName,
+    })) {
       if (doc.displayName) indexedNames.add(doc.displayName);
     }
   } else {
