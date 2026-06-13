@@ -69,7 +69,7 @@ The scripts load your `.env` via [dotenv](https://github.com/motdotla/dotenv), s
 
 - [`scripts/upload.js`](scripts/upload.js) — creates (or reuses) a File Search store and indexes the files you pass it, then prints the store id for `.env`.
 - [`scripts/search.js`](scripts/search.js) — queries the store in `FILE_SEARCH_STORE` with the question you pass on the command line (`npm run search -- "your question"`), prints a grounded answer and the source documents it cited.
-- [`scripts/agent.js`](scripts/agent.js) — a mini multi-turn chat agent built on the SDK's chat-session helper (Google Search grounding + the system prompt from [`docs/prompts/step_5.txt`](docs/prompts/step_5.txt)). It keeps conversation history, so follow-up questions stay in context. Only needs `GEMINI_API_KEY` — no File Search store.
+- [`scripts/agent.js`](scripts/agent.js) — a mini multi-turn chat agent: a conversational version of `search.js`. Built on the SDK's chat-session helper, it grounds answers in the same `FILE_SEARCH_STORE` (with citations) using the docs-only prompt from [`docs/prompts/step_2.txt`](docs/prompts/step_2.txt), and keeps conversation history so follow-up questions stay in context. Build the store with `upload.js` first.
 
 ```bash
 # Interactive chat (type "exit" to quit):
