@@ -6,6 +6,8 @@
   render the "About this codelab" block (the parent step adopts it):
     authors=...        -> "Written by <authors>"   (from the `authors:` metadata)
     last-updated=...   -> "Last updated <date>"     (set automatically on export)
+    codelab-title=...  -> REQUIRED — the element's render does title.split(":")
+                          and throws if the attribute is absent (card won't show)
 -->
 <html>
 <head>
@@ -35,7 +37,7 @@
                   feedback-link="{{.Meta.Feedback}}">
     {{range $i, $e := .Steps}}{{if matchEnv .Tags $.Env}}
       <google-codelab-step label="{{.Title}}" duration="{{.Duration.Minutes}}">
-        {{if eq $i 0}}<google-codelab-about authors="{{$.Meta.Authors}}" last-updated="{{$.Updated}}"></google-codelab-about>
+        {{if eq $i 0}}<google-codelab-about authors="{{$.Meta.Authors}}" last-updated="{{$.Updated}}" codelab-title="{{$.Meta.Title}}"></google-codelab-about>
         {{end}}{{.Content | renderHTML $.Context}}
       </google-codelab-step>
     {{end}}{{end}}
