@@ -1,6 +1,6 @@
 # labs
 
-Hands-on **codelabs** written by Chuka Ofili.
+Hands-on **codelabs** written by [Chuka Ofili](https://iamchuka.com).
 Browse them live at **<https://chukaofili.github.io/labs/>**.
 
 ## Codelabs
