@@ -10,8 +10,11 @@ RAG (Retrieval-Augmented Generation) connects a great model to _your_ content so
 chatbot-with-rag/
 ├── docs/                                       # Run-the-session materials
 │   ├── Build_with_Gemini_RAG_Workshop.pptx     # 10-slide deck
-│   ├── codelab_rag_chatbot_ai_studio.md        # Step-by-step hands-on guide
-│   └── facilitator_notes.md                    # Minute-by-minute run of show
+│   ├── codelab.md                              # Step-by-step hands-on guide
+│   ├── speaker-notes.md                        # Minute-by-minute run of show
+│   └── prompts/                                # System-instruction prompts from the codelab
+│       ├── step_2.txt                          # Docs-only support assistant (Step 2)
+│       └── step_5.txt                          # Docs-first + Google Search grounding (Step 5)
 ├── knowledge-base/                             # Sample docs to ingest into the RAG
 │   ├── markdowns/                              # Markdown source documents
 │   │   ├── 01_Company_Overview_FAQ.md
@@ -26,8 +29,9 @@ chatbot-with-rag/
 └── scripts/                                    # Gemini API code samples (Node.js)
     ├── upload.js                               # Index docs into a File Search store
     ├── search.js                               # Query the store with grounded, cited answers
+    ├── agent.js                                # Interactive multi-turn chat agent
     ├── package.json                            # @google/genai dependency + npm scripts
-    └── .env.example                            # API key + optional question override
+    └── .env.example                            # API key + File Search store id
 ```
 
 ## The knowledge base
@@ -39,11 +43,11 @@ The `knowledge-base/` folder is a fictional-but-realistic dataset for **Interste
 ## Run the workshop
 
 1. Open [Google AI Studio](https://aistudio.google.com) and sign in.
-2. Add a system instruction telling the model to answer **only** from the provided documents.
-3. Enable the **File Search** tool and upload the files in `knowledge-base/`.
+2. Add a system instruction telling the model to answer **only** from the provided documents (see [`docs/prompts/step_2.txt`](docs/prompts/step_2.txt)).
+3. Attach the files from `knowledge-base/` with the **+** button so the model is grounded in them.
 4. Ask questions — the bot answers from the docs and cites its source.
 
-Full walkthrough: [`docs/codelab_rag_chatbot_ai_studio.md`](docs/codelab_rag_chatbot_ai_studio.md).
+Full walkthrough: [`docs/codelab.md`](docs/codelab.md).
 
 ## Run the code samples (optional)
 
@@ -65,6 +69,15 @@ The scripts load your `.env` via [dotenv](https://github.com/motdotla/dotenv), s
 
 - [`scripts/upload.js`](scripts/upload.js) — creates (or reuses) a File Search store and indexes the files you pass it, then prints the store id for `.env`.
 - [`scripts/search.js`](scripts/search.js) — queries the store in `FILE_SEARCH_STORE` with the question you pass on the command line (`npm run search -- "your question"`), prints a grounded answer and the source documents it cited.
+- [`scripts/agent.js`](scripts/agent.js) — a mini multi-turn chat agent built on the SDK's chat-session helper (Google Search grounding + the system prompt from [`docs/prompts/step_5.txt`](docs/prompts/step_5.txt)). It keeps conversation history, so follow-up questions stay in context. Only needs `GEMINI_API_KEY` — no File Search store.
+
+```bash
+# Interactive chat (type "exit" to quit):
+npm run agent
+
+# Or one-shot:
+npm run agent -- "What is your refund policy?"
+```
 
 Get an API key at [aistudio.google.com/apikey](https://aistudio.google.com/apikey).
 
