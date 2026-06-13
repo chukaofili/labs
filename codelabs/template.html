@@ -41,6 +41,19 @@
     {{end}}{{end}}
   </google-codelab>
 
+  <script>
+    // The codelab "Done" button / home link reads the `index` query param and
+    // resolves it against the origin (non-alphanumerics are stripped). Default it
+    // to the labs index so "Done" goes to /labs/ even on direct visits.
+    (function () {
+      var u = new URL(location.href);
+      if (!u.searchParams.get("index")) {
+        u.searchParams.set("index", "labs");
+        history.replaceState(null, "", u);
+      }
+    })();
+  </script>
+
   <script src="{{.Prefix}}/claat-public/native-shim.js"></script>
   <script src="{{.Prefix}}/claat-public/custom-elements.min.js"></script>
   <script src="{{.Prefix}}/claat-public/prettify.js"></script>
